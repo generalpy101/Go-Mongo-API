@@ -1,6 +1,6 @@
 # This workflow will build the go project to a binary to check for build
 
-name: Tests
+name: Build
 
 on:
   push:
