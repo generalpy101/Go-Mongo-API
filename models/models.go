@@ -5,7 +5,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type Netflix struct {
+type Movie struct {
 	// ID will be automatically generated when we insert a new Movie
 	// bson can also be represented as json so can define rules for it too
 	ID      primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`

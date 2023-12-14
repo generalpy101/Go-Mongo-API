@@ -1,0 +1,95 @@
+definitions:
+  models.Movie:
+    properties:
+      _id:
+        description: |-
+          ID will be automatically generated when we insert a new Movie
+          bson can also be represented as json so can define rules for it too
+        type: string
+      title:
+        type: string
+      watched:
+        type: boolean
+    type: object
+info:
+  contact: {}
+paths:
+  /api/movies:
+    delete:
+      description: Delete all movies
+      responses:
+        "204":
+          description: No Content
+      summary: Delete all movies
+      tags:
+      - movies
+    get:
+      description: Get all movies from the database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Movie'
+            type: array
+      summary: Get a list of movies
+      tags:
+      - movies
+    post:
+      consumes:
+      - application/json
+      description: Create a new movie
+      parameters:
+      - description: Title of the movie
+        in: body
+        name: title
+        required: true
+        schema:
+          type: string
+      - description: Watched status of the movie
+        in: body
+        name: watched
+        schema:
+          type: boolean
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Movie'
+      summary: Create a new movie
+      tags:
+      - movies
+  /api/movies/{id}:
+    delete:
+      description: Delete a movie by ID
+      parameters:
+      - description: Movie ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+      summary: Delete a movie by ID
+      tags:
+      - movies
+    post:
+      consumes:
+      - application/json
+      description: Set a movie as watched
+      parameters:
+      - description: Movie ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+      summary: Set movie as watched
+      tags:
+      - movies
+swagger: "2.0"

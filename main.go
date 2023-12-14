@@ -6,6 +6,9 @@ import (
 	"net/http"
 
 	routes "github.com/generalpy101/Go-Mongo-API/routers"
+
+	_ "github.com/generalpy101/Go-Mongo-API/docs"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 const port = ":8080"
@@ -17,6 +20,9 @@ func main() {
 	fmt.Println("Go API With MongoDB")
 	fmt.Println("Server starting on port", port)
 	r := routes.Router()
+
+	// Server docs at /docs
+	r.PathPrefix("/docs/").Handler(httpSwagger.WrapHandler)
 	log.Fatal(http.ListenAndServe(":8080", r))
 	fmt.Println("Server started on port", port)
 }

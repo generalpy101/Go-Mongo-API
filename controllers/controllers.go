@@ -50,7 +50,7 @@ func init() {
 
 // Insert one movie into DB
 // Helper so we don't have to export this function
-func insertOneMovie(movie models.Netflix) {
+func insertOneMovie(movie models.Movie) {
 	res, err := collection.InsertOne(context.Background(), movie)
 
 	if err != nil {
@@ -171,6 +171,14 @@ func getAllMovies() []primitive.M {
 }
 
 // Controllers to be used in routers - This would be kept in this file
+
+// GetMovies godoc
+// @Summary Get a list of movies
+// @Description Get all movies from the database
+// @Tags movies
+// @Produce json
+// @Success 200 {array} models.Movie
+// @Router /api/movies [get]
 func GetAllMoviesController(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -185,12 +193,21 @@ func GetAllMoviesController(w http.ResponseWriter, r *http.Request) {
 }
 
 // Create a movie
+
+// @Summary Create a new movie
+// @Description Create a new movie
+// @Tags movies
+// @Accept json
+// @Param title body string true "Title of the movie"
+// @Param watched body boolean false "Watched status of the movie"
+// @Success 200 {object} models.Movie
+// @Router /api/movies [post]
 func CreateMovieController(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Allow-Control-Allow-Methods", "POST")
 
 	// Create movie object
-	var movie models.Netflix
+	var movie models.Movie
 
 	// Decode json to movie
 	err := json.NewDecoder(r.Body).Decode(&movie)
@@ -209,6 +226,14 @@ func CreateMovieController(w http.ResponseWriter, r *http.Request) {
 }
 
 // Set movie as watched
+
+// @Summary Set movie as watched
+// @Description Set a movie as watched
+// @Tags movies
+// @Accept json
+// @Param id path string true "Movie ID"
+// @Success 204 "No Content"
+// @Router /api/movies/{id} [post]
 func MarkMovieAsWatchedController(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Allow-Control-Allow-Methods", "POST")
@@ -228,6 +253,13 @@ func MarkMovieAsWatchedController(w http.ResponseWriter, r *http.Request) {
 }
 
 // Delete a movie
+
+// @Summary Delete a movie by ID
+// @Description Delete a movie by ID
+// @Tags movies
+// @Param id path string true "Movie ID"
+// @Success 204 "No Content"
+// @Router /api/movies/{id} [delete]
 func DeleteMovieController(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Allow-Control-Allow-Methods", "DELETE")
@@ -247,6 +279,12 @@ func DeleteMovieController(w http.ResponseWriter, r *http.Request) {
 }
 
 // Delete all movies
+
+// @Summary Delete all movies
+// @Description Delete all movies
+// @Tags movies
+// @Success 204 "No Content"
+// @Router /api/movies [delete]
 func DeleteAllMoviesController(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Allow-Control-Allow-Methods", "DELETE")
