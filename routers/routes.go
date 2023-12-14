@@ -9,7 +9,7 @@ import (
 )
 
 func Router() *mux.Router {
-	router := mux.NewRouter()
+	router := mux.NewRouter().StrictSlash(false)
 
 	router.Use(loggingMiddleware)
 
