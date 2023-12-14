@@ -1,0 +1,31 @@
+# This workflow will build the go project to a binary to check for build
+
+name: Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21'
+    - name: Install dependencies
+      run: go mod download && go mod verify
+    - name: Build binary
+      run: go build -o server
+    - name: Check if binary is built
+      run: |
+        if [ -f server ]; then
+          echo "Binary is built"
+        else
+          echo "Binary is not built"
+          exit 1
+        fi
