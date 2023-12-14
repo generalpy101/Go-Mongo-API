@@ -13,6 +13,14 @@ func Router() *mux.Router {
 
 	router.Use(loggingMiddleware)
 
+	// Test route
+	router.HandleFunc("/test", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+
+		response := "{\"message\": \"Server is up and running\"}"
+		w.Write([]byte(response))
+	}).Methods("GET")
+
 	router.HandleFunc("/api/movies", controllers.GetAllMoviesController).Methods("GET")
 	router.HandleFunc("/api/movies", controllers.CreateMovieController).Methods("POST")
 	router.HandleFunc("/api/movies/{id}", controllers.MarkMovieAsWatchedController).Methods("POST")
