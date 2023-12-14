@@ -2,19 +2,22 @@ package controllers
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 
 	"github.com/generalpy101/Go-Mongo-API/models"
+	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const connectionString = "mongodb://localhost:27017" // To use environment variables for better security
-const dbName = "netflix"                             // Database name
-const collectionName = "movies"                      // Collection name required for mongo kinda like tables in SQL
+const connectionString = "mongodb://mongodb:27017" // To use environment variables for better security, using dockerized mongodb
+const dbName = "netflix"                           // Database name
+const collectionName = "movies"                    // Collection name required for mongo kinda like tables in SQL
 
 // Important collection object
 var collection *mongo.Collection
@@ -165,4 +168,96 @@ func getAllMovies() []primitive.M {
 	}
 
 	return movies
+}
+
+// Controllers to be used in routers - This would be kept in this file
+func GetAllMoviesController(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	movies := getAllMovies()
+
+	// Write movies to response
+	err := json.NewEncoder(w).Encode(movies)
+	if err != nil {
+		// TODO: Better error handling for API
+		log.Fatal(err)
+	}
+}
+
+// Create a movie
+func CreateMovieController(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Allow-Control-Allow-Methods", "POST")
+
+	// Create movie object
+	var movie models.Netflix
+
+	// Decode json to movie
+	err := json.NewDecoder(r.Body).Decode(&movie)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Insert movie to DB
+	insertOneMovie(movie)
+
+	// Write movie to response
+	err = json.NewEncoder(w).Encode(movie)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+// Set movie as watched
+func MarkMovieAsWatchedController(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Allow-Control-Allow-Methods", "POST")
+
+	pramas := mux.Vars(r) // Get params
+	movieID := pramas["id"]
+
+	updateOneMovie(movieID)
+
+	// Write movies to response
+	err := json.NewEncoder(w).Encode(`{
+		"message": "Movie marked as watched"
+	}`)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+// Delete a movie
+func DeleteMovieController(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Allow-Control-Allow-Methods", "DELETE")
+
+	pramas := mux.Vars(r) // Get params
+	movieID := pramas["id"]
+
+	deleteOneMovie(movieID)
+
+	// Write movies to response
+	err := json.NewEncoder(w).Encode(`{
+		"message": "Moview with id ` + movieID + ` deleted"
+	}`)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+// Delete all movies
+func DeleteAllMoviesController(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Allow-Control-Allow-Methods", "DELETE")
+
+	deletedCount := deleteAllMovies()
+
+	// Write movies to response
+	err := json.NewEncoder(w).Encode(`{
+		"message": "Deleted ` + fmt.Sprint(deletedCount) + ` movies"
+	}`)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
